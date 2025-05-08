@@ -1,17 +1,15 @@
 package service;
 
+import java.util.List;
+import lombok.RequiredArgsConstructor;
 import model.Book;
 import org.springframework.stereotype.Service;
 import repository.BookRepository;
-import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
-
-    public BookServiceImpl(BookRepository bookRepository) {
-        this.bookRepository = bookRepository;
-    }
 
     @Override
     public List<Book> findAll() {
