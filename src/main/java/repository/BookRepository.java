@@ -5,6 +5,7 @@ import dao.CreateBookRequestDto;
 import model.Book;
 import org.springframework.stereotype.Repository;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BookRepository {
@@ -14,7 +15,8 @@ public interface BookRepository {
 
     List getAll();
 
-    BookDto getBookById(Long id);
+    Optional<Book> findById(Long id);
+
 
     BookDto createBook(CreateBookRequestDto bookDto);
 }
