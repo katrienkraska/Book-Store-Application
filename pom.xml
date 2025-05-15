@@ -90,9 +90,6 @@
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>true</failsOnError>
                     <linkXRef>false</linkXRef>
-                    <includes>
-                        <include>**/*.java</include>
-                    </includes>
                     <sourceDirectories>
                         <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
                     </sourceDirectories>
