@@ -1,15 +1,15 @@
-package service;
+package org.example.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import dao.BookDto;
-import dao.CreateBookRequestDto;
-import exception.EntityNotFoundException;
+import org.example.dto.BookDto;
+import org.example.dto.CreateBookRequestDto;
+import org.example.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import mapper.BookMapper;
-import model.Book;
+import org.example.mapper.BookMapper;
+import org.example.model.Book;
 import org.springframework.stereotype.Service;
-import repository.BookRepository;
+import org.example.repository.BookRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -22,11 +22,6 @@ public class BookServiceImpl implements BookService {
         return bookRepository.findAll().stream()
                 .map(bookMapper::toDto)
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public List getAll() {
-        return bookRepository.getAll();
     }
 
     @Override

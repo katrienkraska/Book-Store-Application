@@ -1,8 +1,8 @@
-package repository;
+package org.example.repository;
 
-import dao.BookDto;
-import dao.CreateBookRequestDto;
-import model.Book;
+import org.example.dto.BookDto;
+import org.example.dto.CreateBookRequestDto;
+import org.example.model.Book;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
@@ -10,13 +10,7 @@ import java.util.Optional;
 @Repository
 public interface BookRepository {
     Book save(Book book);
-
     List<Book> findAll();
-
-    List getAll();
-
     Optional<Book> findById(Long id);
-
-
     BookDto createBook(CreateBookRequestDto bookDto);
 }

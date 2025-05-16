@@ -1,8 +1,8 @@
-package mapper;
+package org.example.mapper;
 
-import dao.BookDto;
-import dao.CreateBookRequestDto;
-import model.Book;
+import org.example.dto.BookDto;
+import org.example.dto.CreateBookRequestDto;
+import org.example.model.Book;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
