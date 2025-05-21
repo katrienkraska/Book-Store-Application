@@ -2,7 +2,6 @@ package org.example.controller;
 
 import org.example.dto.BookDto;
 import org.example.dto.CreateBookRequestDto;
-import org.example.model.Book;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,11 +22,6 @@ public class BookController {
     @GetMapping
     public List<BookDto> findAll() {
         return bookService.findAll();
-    }
-
-    @GetMapping
-    public Book save(Book book) {
-        return bookService.save(book);
     }
 
     @GetMapping("/{id}")
