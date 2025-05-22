@@ -1,7 +1,6 @@
 package org.example.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import org.example.dto.BookDto;
 import org.example.dto.CreateBookRequestDto;
 import org.example.exception.EntityNotFoundException;
@@ -21,7 +20,7 @@ public class BookServiceImpl implements BookService {
     public List<BookDto> findAll() {
         return bookRepository.findAll().stream()
                 .map(bookMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
