@@ -9,10 +9,12 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Where;
 
 @Getter
 @Setter
 @Entity
+@Where(clause = "deleted = false")
 @Table(name = "books")
 public class Book {
     @Id
