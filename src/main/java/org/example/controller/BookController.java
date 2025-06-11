@@ -3,7 +3,6 @@ package org.example.controller;
 import org.example.dto.BookDto;
 import org.example.dto.CreateBookRequestDto;
 import org.example.dto.UpdateBookRequestDto;
-import org.example.model.Book;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.example.service.BookService;
@@ -34,7 +33,7 @@ public class BookController {
     }
 
     @PutMapping("/{id}")
-    public Book update(@PathVariable Long id, @RequestBody UpdateBookRequestDto updateBook) {
+    public BookDto update(@PathVariable Long id, @RequestBody UpdateBookRequestDto updateBook) {
         return bookService.update(id, updateBook);
     }
 
