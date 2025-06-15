@@ -42,8 +42,6 @@ databaseChangeLog:
               - column:
                   name: cover_image
                   type: VARCHAR(1000)
-                  constraints:
-                    nullable: true
               - column:
                   name: deleted
                   type: BOOLEAN

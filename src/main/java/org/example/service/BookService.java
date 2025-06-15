@@ -2,7 +2,6 @@ package org.example.service;
 
 import org.example.dto.BookDto;
 import org.example.dto.CreateBookRequestDto;
-import org.example.dto.UpdateBookRequestDto;
 import java.util.List;
 
 public interface BookService {
@@ -12,7 +11,7 @@ public interface BookService {
 
     BookDto createBook(CreateBookRequestDto bookDto);
 
-    BookDto update(Long id, UpdateBookRequestDto updateBook);
+    BookDto update(Long id, CreateBookRequestDto updateBook);
 
     void delete(Long id);
 }
