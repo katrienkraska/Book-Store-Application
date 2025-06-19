@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0a9ec563-e127-45ca-b229-3275ee6104b7" name="Changes" comment="" />
+    <list default="true" id="0a9ec563-e127-45ca-b229-3275ee6104b7" name="Changes" comment="Add GlobalExceptionHandler and validation logic">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/exception/CustomGlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/exception/CustomGlobalExceptionHandler.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -15,8 +18,8 @@
       <list>
         <option value="Interface" />
         <option value="Exception" />
-        <option value="Class" />
         <option value="Record" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -59,7 +62,7 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;Spring Boot.BookAppApplication.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;hw-02-book&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;data-validation&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -110,11 +113,27 @@
       <workItem from="1749493091473" duration="7396000" />
       <workItem from="1749642100873" duration="10116000" />
       <workItem from="1749990829913" duration="1364000" />
-      <workItem from="1750100977511" duration="11916000" />
+      <workItem from="1750100977511" duration="14006000" />
+      <workItem from="1750255761981" duration="3446000" />
+      <workItem from="1750359921410" duration="324000" />
     </task>
+    <task id="LOCAL-00001" summary="Add GlobalExceptionHandler and validation logic">
+      <option name="closed" value="true" />
+      <created>1750330930422</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1750330930422</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Add GlobalExceptionHandler and DTO validation" />
+    <MESSAGE value="Add GlobalExceptionHandler and validation logic" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add GlobalExceptionHandler and validation logic" />
   </component>
 </project>
