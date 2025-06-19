@@ -27,6 +27,6 @@ public class BookDto {
 
     @Size(max = 1000, message = "Description can be max 1000 characters")
     private String description;
-
+  
     private String coverImage;
 }
