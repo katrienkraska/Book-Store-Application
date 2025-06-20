@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0a9ec563-e127-45ca-b229-3275ee6104b7" name="Changes" comment="Add GlobalExceptionHandler and validation logic">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/controller/BookController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/controller/BookController.java" afterDir="false" />
-    </list>
+    <list default="true" id="0a9ec563-e127-45ca-b229-3275ee6104b7" name="Changes" comment="Add GlobalExceptionHandler and validation logic" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -116,7 +112,7 @@
       <workItem from="1749990829913" duration="1364000" />
       <workItem from="1750100977511" duration="14006000" />
       <workItem from="1750255761981" duration="3446000" />
-      <workItem from="1750359921410" duration="1629000" />
+      <workItem from="1750359921410" duration="1971000" />
     </task>
     <task id="LOCAL-00001" summary="Add GlobalExceptionHandler and validation logic">
       <option name="closed" value="true" />
