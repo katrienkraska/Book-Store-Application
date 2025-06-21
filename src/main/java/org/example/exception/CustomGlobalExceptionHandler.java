@@ -12,12 +12,14 @@ import java.util.stream.Collectors;
 public class CustomGlobalExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException e) {
+    public ResponseEntity<Object> handleEntityNotFoundException(
+            EntityNotFoundException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Object> handleValidationException(MethodArgumentNotValidException e) {
+    public ResponseEntity<Object> handleValidationException(
+            MethodArgumentNotValidException e) {
         List<String> errors = e.getBindingResult()
                 .getAllErrors().stream()
                 .map(objectError -> objectError.getDefaultMessage())
