@@ -12,12 +12,14 @@ import java.util.stream.Collectors;
 public class CustomGlobalExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException e) {
+    public ResponseEntity<Object> handleEntityNotFoundException(
+            EntityNotFoundException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Object> handleValidationException(MethodArgumentNotValidException e) {
+    public ResponseEntity<Object> handleValidationException(
+            MethodArgumentNotValidException e) {
         List<String> errors = e.getBindingResult()
                 .getAllErrors().stream()
                 .map(objectError -> objectError.getDefaultMessage())
@@ -29,11 +31,5 @@ public class CustomGlobalExceptionHandler {
     public ResponseEntity<String> handleAllExceptions(Exception e) {
         return new ResponseEntity<>(
                 "An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    @ExceptionHandler(NullPointerException.class)
-    public ResponseEntity<String> handleNullPointerExceptions(NullPointerException e) {
-        return new ResponseEntity<>(
-                "Null pointer exception occurred", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

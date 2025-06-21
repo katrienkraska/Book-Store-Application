@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import jakarta.validation.Valid;
 import org.example.dto.BookDto;
 import org.example.dto.CreateBookRequestDto;
 import org.springframework.http.HttpStatus;
@@ -35,12 +36,12 @@ public class BookController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public BookDto createBook(@RequestBody CreateBookRequestDto bookDto) {
+    public BookDto createBook(@RequestBody @Valid CreateBookRequestDto bookDto) {
         return bookService.createBook(bookDto);
     }
 
     @PutMapping("/{id}")
-    public BookDto update(@PathVariable Long id, @RequestBody CreateBookRequestDto updateBook) {
+    public BookDto update(@PathVariable Long id, @RequestBody @Valid CreateBookRequestDto updateBook) {
         return bookService.update(id, updateBook);
     }
 

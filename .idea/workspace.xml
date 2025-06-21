@@ -4,17 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0a9ec563-e127-45ca-b229-3275ee6104b7" name="Changes" comment="">
+<<<<<<< Updated upstream
+    <list default="true" id="0a9ec563-e127-45ca-b229-3275ee6104b7" name="Changes" comment="Add GlobalExceptionHandler and validation logic" />
+=======
+    <list default="true" id="0a9ec563-e127-45ca-b229-3275ee6104b7" name="Changes" comment="Add GlobalExceptionHandler and validation logic">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/controller/BookController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/controller/BookController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/dto/UpdateBookRequestDto.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/mapper/BookMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/mapper/BookMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/dto/BookDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/dto/BookDto.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/model/Book.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/model/Book.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/service/BookService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/service/BookService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/service/BookServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/service/BookServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/db/changelog/db.changelog-master.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/db/changelog/db.changelog-master.yaml" afterDir="false" />
     </list>
+>>>>>>> Stashed changes
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -23,8 +23,9 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Exception" />
         <option value="Interface" />
+        <option value="Exception" />
+        <option value="Record" />
         <option value="Class" />
       </list>
     </option>
@@ -68,7 +69,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "Spring Boot.BookAppApplication.executor": "Run",
-    "git-widget-placeholder": "hw-02-book",
+    "git-widget-placeholder": "Rebasing hw-03-book",
     "kotlin-language-version-configured": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -119,10 +120,27 @@
       <workItem from="1749493091473" duration="7396000" />
       <workItem from="1749642100873" duration="10116000" />
       <workItem from="1749990829913" duration="1364000" />
+      <workItem from="1750100977511" duration="14006000" />
+      <workItem from="1750255761981" duration="3446000" />
+      <workItem from="1750359921410" duration="1971000" />
     </task>
+    <task id="LOCAL-00001" summary="Add GlobalExceptionHandler and validation logic">
+      <option name="closed" value="true" />
+      <created>1750330930422</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1750330930422</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Add GlobalExceptionHandler and DTO validation" />
+    <MESSAGE value="Add GlobalExceptionHandler and validation logic" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add GlobalExceptionHandler and validation logic" />
   </component>
 </project>
