@@ -32,10 +32,4 @@ public class CustomGlobalExceptionHandler {
         return new ResponseEntity<>(
                 "An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-    @ExceptionHandler(NullPointerException.class)
-    public ResponseEntity<String> handleNullPointerExceptions(NullPointerException e) {
-        return new ResponseEntity<>(
-                "Null pointer exception occurred", HttpStatus.INTERNAL_SERVER_ERROR);
-    }
 }
