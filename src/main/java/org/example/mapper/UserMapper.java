@@ -4,9 +4,8 @@ import org.example.dto.user.UserRegistrationRequestDto;
 import org.example.dto.user.UserResponseDto;
 import org.example.model.User;
 import org.mapstruct.Mapper;
-import org.mapstruct.MapperConfig;
 
-@Mapper(config = MapperConfig.class)
+@Mapper(componentModel = "spring")
 public interface UserMapper {
     User toModel(UserRegistrationRequestDto requestDto);
 
