@@ -6,36 +6,34 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.math.BigDecimal;
+import jakarta.validation.constraints.Email;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.validator.constraints.Length;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "books")
-@SQLRestriction("deleted = false")
-public class Book {
+@Table(name = "users")
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Email
+    @Column(nullable = false, unique = true)
+    private String email;
+
+    @Length(min = 8)
     @Column(nullable = false)
-    private String title;
-
-    @Column(nullable = false)
-    private String author;
-
-    @Column(unique = true, nullable = false)
-    private String isbn;
-
-    @Column(nullable = false)
-    private BigDecimal price;
-
-    private String description;
-    private String coverImage;
+    private String password;
 
     @Column(nullable = false)
-    private boolean isDeleted = false;
+    private String firstName;
+
+    @Column(nullable = false)
+    private String lastName;
+
+    @Column(nullable = false)
+    private String shippingAddress;
 }

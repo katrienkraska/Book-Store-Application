@@ -32,4 +32,9 @@ public class CustomGlobalExceptionHandler {
         return new ResponseEntity<>(
                 "An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(RegistrationException.class)
+    public ResponseEntity<String> handleRegistrationException(RegistrationException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
 }
