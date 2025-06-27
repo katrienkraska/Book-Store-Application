@@ -5,7 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0a9ec563-e127-45ca-b229-3275ee6104b7" name="Changes" comment="Fixed mentor code review comments.">
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/controller/AuthenticationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/controller/AuthenticationController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/exception/RegistrationException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/exception/RegistrationException.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -117,7 +118,7 @@
       <workItem from="1750359921410" duration="1971000" />
       <workItem from="1750587448836" duration="650000" />
       <workItem from="1750764352053" duration="5274000" />
-      <workItem from="1751014363366" duration="293000" />
+      <workItem from="1751014363366" duration="2411000" />
     </task>
     <task id="LOCAL-00001" summary="Add GlobalExceptionHandler and validation logic">
       <option name="closed" value="true" />
