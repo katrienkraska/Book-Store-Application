@@ -3,6 +3,7 @@ package org.example.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.example.dto.user.UserRegistrationRequestDto;
 import org.example.dto.user.UserResponseDto;
 import org.example.exception.RegistrationException;
@@ -16,14 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "authenticate", description = "User authenticate")
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/auth")
 public class AuthenticationController {
     private final UserService userService;
-
-    public AuthenticationController(
-            UserService userService) {
-        this.userService = userService;
-    }
 
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Register a new user",
