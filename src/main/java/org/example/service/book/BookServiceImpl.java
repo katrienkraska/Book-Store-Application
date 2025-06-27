@@ -1,7 +1,7 @@
-package org.example.service;
+package org.example.service.book;
 
-import org.example.dto.BookDto;
-import org.example.dto.CreateBookRequestDto;
+import org.example.dto.book.BookDto;
+import org.example.dto.book.CreateBookRequestDto;
 import org.example.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.example.mapper.BookMapper;
