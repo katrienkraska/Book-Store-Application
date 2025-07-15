@@ -32,7 +32,7 @@ databaseChangeLog:
                     nullable: false
 
               - column:
-                  name: firstName
+                  name: first_name
                   type: VARCHAR(255)
                   constraints:
                     nullable: false
