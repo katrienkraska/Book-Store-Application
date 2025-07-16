@@ -1,12 +1,8 @@
 databaseChangeLog:
   - changeSet:
-      id: 3
+      id: 2
       author: Kate Kraska
       changes:
-        - dropTable:
-            tableName: users
-            cascadeConstraints: true
-
         - createTable:
             tableName: users
             columns:
@@ -17,32 +13,27 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
                     nullable: false
-
               - column:
                   name: email
                   type: VARCHAR(255)
                   constraints:
                     nullable: false
                     unique: true
-
               - column:
                   name: password
                   type: VARCHAR(255)
                   constraints:
                     nullable: false
-
               - column:
-                  name: firstName
+                  name: first_name
                   type: VARCHAR(255)
                   constraints:
                     nullable: false
-
               - column:
                   name: last_name
                   type: VARCHAR(255)
                   constraints:
                     nullable: false
-
               - column:
                   name: shipping_address
                   type: VARCHAR(255)
