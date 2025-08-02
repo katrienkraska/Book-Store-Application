@@ -2,7 +2,6 @@ package org.example.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -32,10 +31,6 @@ public class SecurityConfig {
                                         antMatcher("/swagger-ui/**"),
                                         antMatcher("/v3/api-docs/**"))
                                 .permitAll()
-                                .requestMatchers(HttpMethod.GET, "/books/**").hasAnyRole("USER", "ADMIN")
-                                .requestMatchers(HttpMethod.POST, "/books/**").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.PUT, "/books/**").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.DELETE, "/books/**").hasRole("ADMIN")
                                 .anyRequest()
                                 .authenticated()
                 )

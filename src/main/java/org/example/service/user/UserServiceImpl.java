@@ -1,6 +1,5 @@
 package org.example.service.user;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.dto.user.UserRegistrationRequestDto;
 import org.example.dto.user.UserResponseDto;
@@ -13,6 +12,7 @@ import org.example.repository.RoleRepository;
 import org.example.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.Set;
 
 @Transactional
@@ -37,9 +37,9 @@ public class UserServiceImpl implements UserService {
 
         User user = userMapper.toModel(requestDto);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        Role userRole = roleRepository.findByRole(RoleName.USER)
+        Role userRole = roleRepository.findByRole(RoleName.ROLE_USER)
                 .orElseThrow(() -> new RegistrationException(
-                        "Default role USER not found in database."));
+                        "Default role " + RoleName.ROLE_USER + " not found in database."));
         user.setRoles(Set.of(userRole));
         userRepository.save(user);
         return userMapper.toDto(user);

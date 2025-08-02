@@ -1,10 +1,10 @@
 package org.example.dto.book;
 
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import org.hibernate.validator.constraints.NotBlank;
 import java.math.BigDecimal;
 
 @Data
