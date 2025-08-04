@@ -6,7 +6,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class CustomGlobalExceptionHandler {
@@ -23,7 +22,7 @@ public class CustomGlobalExceptionHandler {
         List<String> errors = e.getBindingResult()
                 .getAllErrors().stream()
                 .map(objectError -> objectError.getDefaultMessage())
-                .collect(Collectors.toList());
+                .toList();
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
