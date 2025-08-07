@@ -33,7 +33,8 @@ public class SecurityConfig {
                                 .anyRequest()
                                 .authenticated()
                 )
-                .httpBasic(Customizer.withDefaults())
+                .anonymous(Customizer.withDefaults())
+                .httpBasic(AbstractHttpConfigurer::disable)
                 .build();
     }
 }

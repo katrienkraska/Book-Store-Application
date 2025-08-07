@@ -40,7 +40,7 @@ public class BookController {
                     + "Default sorting is by in ascending order. "
                     + "Only users with 'USER' authority can access this endpoint."
     )
-    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     @GetMapping
     public Page<BookDto> findAll(Pageable pageable) {
         return bookService.findAll(pageable);
@@ -49,7 +49,7 @@ public class BookController {
     @Operation(summary = "Get book by ID",
             description = "Fetches a book from the system using its unique identifier. "
                     + "Only users with 'USER' authority can access this endpoint.")
-    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     @GetMapping("/{id}")
     public BookDto getBookById(
             @Parameter(description = "ID book", required = true)
@@ -62,7 +62,7 @@ public class BookController {
                     + "'ADMIN' authority can perform this operation. "
                     + "The request body must contain valid book details."
     )
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public BookDto createBook(
@@ -77,7 +77,7 @@ public class BookController {
                     + "Only users with 'ADMIN' authority can perform this operation. "
                     + "The request body must contain valid book details."
     )
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PutMapping("/{id}")
     public BookDto update(
             @Parameter(description = "Book ID to update", required = true)
@@ -90,7 +90,7 @@ public class BookController {
             description = "Deletes a book identified by the given ID. "
                     + "Only users with 'ADMIN' authority can perform this operation."
     )
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(
