@@ -37,8 +37,6 @@ databaseChangeLog:
               - column:
                   name: description
                   type: VARCHAR(1000)
-                  constraints:
-                    nullable: true
               - column:
                   name: cover_image
                   type: VARCHAR(1000)
