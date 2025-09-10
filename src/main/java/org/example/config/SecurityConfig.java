@@ -8,10 +8,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
@@ -21,6 +22,7 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final UserDetailsService userDetailsService;
 
     @Bean
     public PasswordEncoder getPasswordEncoder() {
@@ -36,14 +38,16 @@ public class SecurityConfig {
                                 .requestMatchers(
                                         antMatcher("/auth/**"),
                                         antMatcher("/swagger-ui/**"),
-                                        antMatcher("/v3/api-docs/**"))
+                                        antMatcher("/v3/api-docs/**"),
+                                        antMatcher("/error"))
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated()
                 )
-                .anonymous(Customizer.withDefaults())
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .httpBasic(AbstractHttpConfigurer::disable)
+                .userDetailsService(userDetailsService)
                 .build();
     }
 

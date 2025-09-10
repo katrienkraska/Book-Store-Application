@@ -5,7 +5,7 @@ import org.example.dto.book.CreateBookRequestDto;
 import org.example.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.example.mapper.BookMapper;
-import org.example.model.book.Book;
+import org.example.model.Book;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

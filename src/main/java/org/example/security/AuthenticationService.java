@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
-    private JwtUtil jwtUtil;
-    private AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
+    private final AuthenticationManager authenticationManager;
 
     public UserLoginResponseDto authenticate(UserLoginRequestDto requestDto) {
         final Authentication authentication = authenticationManager.authenticate(

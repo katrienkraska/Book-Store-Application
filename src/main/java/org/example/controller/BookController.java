@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/books")
 @RequiredArgsConstructor
 public class BookController {
-
     private final BookService bookService;
 
     @Operation(summary = "Get a list of all books with pagination",
