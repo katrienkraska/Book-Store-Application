@@ -6,6 +6,8 @@ import org.example.mapper.BookMapper;
 import org.example.model.Book;
 import org.example.repository.BookRepository;
 import org.example.service.category.CategoryService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -56,8 +58,8 @@ public class CategoryController {
     )
     @PreAuthorize("hasAuthority('ROLE_USER')")
     @GetMapping
-    public List<CategoryDto> getAll() {
-        return categoryService.findAll();
+    public Page<CategoryDto> getAll(Pageable pageable) {
+        return categoryService.findAll(pageable);
     }
 
     @Operation(summary = "Get category by ID",
