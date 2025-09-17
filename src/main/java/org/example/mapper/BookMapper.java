@@ -6,7 +6,6 @@ import org.example.dto.category.BookDtoWithoutCategoryIds;
 import org.example.model.Book;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
-
 import java.util.List;
 
 @Mapper(componentModel = "spring")

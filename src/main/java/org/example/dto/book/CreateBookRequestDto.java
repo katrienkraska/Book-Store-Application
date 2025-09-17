@@ -5,7 +5,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import org.example.dto.category.CategoryRequestDto;
+
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class CreateBookRequestDto {
@@ -28,4 +31,8 @@ public class CreateBookRequestDto {
     private String description;
 
     private String coverImage;
+
+    private List<Long> categoryIds;
+
+    private List<CategoryRequestDto> categories;
 }

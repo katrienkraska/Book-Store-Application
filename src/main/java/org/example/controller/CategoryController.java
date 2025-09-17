@@ -3,7 +3,6 @@ package org.example.controller;
 import org.example.dto.category.BookDtoWithoutCategoryIds;
 import org.example.dto.category.CategoryDto;
 import org.example.mapper.BookMapper;
-import org.example.model.Book;
 import org.example.repository.BookRepository;
 import org.example.service.category.CategoryService;
 import org.springframework.data.domain.Page;
@@ -98,7 +97,6 @@ public class CategoryController {
     @PreAuthorize("hasAuthority('ROLE_USER')")
     @GetMapping("/{id}/books")
     public List<BookDtoWithoutCategoryIds> getBooksByCategoryId(@PathVariable Long id) {
-        List<Book> byCategoriesId = bookRepository.findByCategoriesId(id);
-        return bookMapper.toDtoWithoutCategories(byCategoriesId);
+        return categoryService.getBooksByCategoryId(id);
     }
 }

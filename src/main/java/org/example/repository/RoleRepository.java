@@ -4,7 +4,6 @@ import org.example.model.Role;
 import org.example.model.RoleName;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
 import java.util.Optional;
 
 @Repository
