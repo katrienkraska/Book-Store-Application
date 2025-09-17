@@ -2,11 +2,10 @@ package org.example.dto.book;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import org.example.dto.category.CategoryRequestDto;
-
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -32,7 +31,6 @@ public class CreateBookRequestDto {
 
     private String coverImage;
 
+    @NotEmpty
     private List<Long> categoryIds;
-
-    private List<CategoryRequestDto> categories;
 }
