@@ -68,23 +68,11 @@ public class BookServiceImpl implements BookService {
 
         if (requestDto.getCategoryIds() != null) {
             categories.addAll(
-                    requestDto.getCategoryIds().stream()
+                    requestDto.getCategoryIds()
+                            .stream()
                             .map(id -> categoryRepository.findById(id)
-                                    .orElseThrow(() -> new RuntimeException(
+                                    .orElseThrow(() -> new EntityNotFoundException(
                                             "Category not found: " + id)))
-                            .toList()
-            );
-        }
-
-        if (requestDto.getCategories() != null) {
-            categories.addAll(
-                    requestDto.getCategories().stream()
-                            .map(catDto -> {
-                                Category category = new Category();
-                                category.setName(catDto.getName());
-                                category.setDescription(catDto.getDescription());
-                                return categoryRepository.save(category);
-                            })
                             .toList()
             );
         }
