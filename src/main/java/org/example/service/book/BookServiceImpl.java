@@ -5,17 +5,22 @@ import org.example.dto.book.CreateBookRequestDto;
 import org.example.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.example.mapper.BookMapper;
-import org.example.model.book.Book;
+import org.example.model.Book;
+import org.example.model.Category;
+import org.example.repository.CategoryRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.example.repository.BookRepository;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
+    private final CategoryRepository categoryRepository;
 
     @Override
     public Page<BookDto> findAll(Pageable pageable) {
@@ -53,5 +58,28 @@ public class BookServiceImpl implements BookService {
                     "Book not found with id: " + id);
         }
         bookRepository.deleteById(id);
+    }
+
+    @Override
+    public BookDto save(CreateBookRequestDto requestDto) {
+        Book book = bookMapper.toModel(requestDto);
+
+        Set<Category> categories = new HashSet<>();
+
+        if (requestDto.getCategoryIds() != null) {
+            categories.addAll(
+                    requestDto.getCategoryIds()
+                            .stream()
+                            .map(id -> categoryRepository.findById(id)
+                                    .orElseThrow(() -> new EntityNotFoundException(
+                                            "Category not found: " + id)))
+                            .toList()
+            );
+        }
+
+        book.setCategories(categories);
+
+        Book saved = bookRepository.save(book);
+        return bookMapper.toDto(saved);
     }
 }
