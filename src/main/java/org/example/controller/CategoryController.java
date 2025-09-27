@@ -2,8 +2,6 @@ package org.example.controller;
 
 import org.example.dto.category.BookDtoWithoutCategoryIds;
 import org.example.dto.category.CategoryDto;
-import org.example.mapper.BookMapper;
-import org.example.repository.BookRepository;
 import org.example.service.category.CategoryService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,8 +28,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class CategoryController {
     private final CategoryService categoryService;
-    private final BookRepository bookRepository;
-    private final BookMapper bookMapper;
 
     @Operation(
             summary = "Create a new category",
