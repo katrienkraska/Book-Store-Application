@@ -13,7 +13,7 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
               - column:
-                  name: name
+                  name: role
                   type: VARCHAR(50)
                   constraints:
                     nullable: false
@@ -22,11 +22,11 @@ databaseChangeLog:
             tableName: roles
             columns:
               - column:
-                  name: name
-                  value: USER
+                  name: role
+                  value: ROLE_USER
         - insert:
             tableName: roles
             columns:
               - column:
-                  name: name
-                  value: ADMIN
+                  name: role
+                  value: ROLE_ADMIN

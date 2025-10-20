@@ -25,7 +25,7 @@ databaseChangeLog:
                     nullable: true
               - column:
                   name: is_deleted
-                  type: bit
+                  type: BIT
                   constraints:
                     nullable: false
         - addUniqueConstraint:
