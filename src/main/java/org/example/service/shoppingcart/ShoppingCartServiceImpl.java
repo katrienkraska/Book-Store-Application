@@ -9,6 +9,7 @@ import org.example.mapper.ShoppingCartMapper;
 import org.example.model.Book;
 import org.example.model.CartItem;
 import org.example.model.ShoppingCart;
+import org.example.model.User;
 import org.example.repository.BookRepository;
 import org.example.repository.CartItemRepository;
 import org.example.repository.ShoppingCartRepository;
@@ -65,7 +66,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
-    public void saveShoppingCartForUser(org.example.model.User user) {
+    public void saveShoppingCartForUser(User user) {
         ShoppingCart shoppingCart = new ShoppingCart();
         shoppingCart.setUser(user);
         shoppingCartRepository.save(shoppingCart);
