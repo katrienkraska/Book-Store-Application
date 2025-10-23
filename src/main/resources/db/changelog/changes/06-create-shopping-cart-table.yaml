@@ -1,10 +1,10 @@
 databaseChangeLog:
   - changeSet:
-      id: 4
+      id: 6
       author: Kate Kraska
       changes:
         - createTable:
-            tableName: categories
+            tableName: shopping_carts
             columns:
               - column:
                   name: id
@@ -14,21 +14,17 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: name
-                  type: varchar(255)
+                  name: user_id
+                  type: bigint
                   constraints:
                     nullable: false
-              - column:
-                  name: description
-                  type: varchar(255)
-                  constraints:
-                    nullable: true
               - column:
                   name: is_deleted
                   type: BIT
-                  constraints:
-                    nullable: false
-        - addUniqueConstraint:
-            columnNames: name
-            tableName: categories
-            constraintName: unique_category_name
+                  defaultValueBoolean: false
+        - addForeignKeyConstraint:
+            baseTableName: shopping_carts
+            baseColumnNames: user_id
+            constraintName: fk_user_shopping_cart
+            referencedTableName: users
+            referencedColumnNames: id

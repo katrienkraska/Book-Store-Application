@@ -10,6 +10,7 @@ import org.example.model.RoleName;
 import org.example.model.User;
 import org.example.repository.RoleRepository;
 import org.example.repository.UserRepository;
+import org.example.service.shoppingcart.ShoppingCartService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ShoppingCartService shoppingCartService;
 
     @Override
     public UserResponseDto registerUser(UserRegistrationRequestDto requestDto)
@@ -37,11 +39,14 @@ public class UserServiceImpl implements UserService {
 
         User user = userMapper.toModel(requestDto);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+
         Role userRole = roleRepository.findByRole(RoleName.ROLE_USER)
                 .orElseThrow(() -> new RegistrationException(
                         "Default role " + RoleName.ROLE_USER + " not found in database."));
         user.setRoles(Set.of(userRole));
+
         userRepository.save(user);
+        shoppingCartService.saveShoppingCartForUser(user);
         return userMapper.toDto(user);
     }
 }
