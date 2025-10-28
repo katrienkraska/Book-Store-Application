@@ -6,15 +6,14 @@ import org.example.dto.shoppingcart.ShoppingCartDto;
 import org.example.model.User;
 
 public interface ShoppingCartService {
-
     ShoppingCartDto getByUserId(Long authenticationId);
 
     ShoppingCartDto save(Long authenticationId, CartItemRequestDto requestDto);
 
     void saveShoppingCartForUser(User user);
 
-    ShoppingCartDto update(Long authenticationId,
-                           Long cartItemId, CartItemUpdateDto updateDto);
+    ShoppingCartDto update(Long authenticationId, Long cartItemId,
+                           CartItemUpdateDto updateDto);
 
     void deleteById(Long authenticationId, Long id);
 }

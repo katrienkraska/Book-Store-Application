@@ -24,7 +24,7 @@ databaseChangeLog:
                   defaultValueBoolean: false
         - addForeignKeyConstraint:
             baseTableName: shopping_carts
-            baseColumnNames: user_id
-            constraintName: fk_user_shopping_cart
+            baseColumnNames: id
+            constraintName: fk_shopping_cart_user
             referencedTableName: users
             referencedColumnNames: id
