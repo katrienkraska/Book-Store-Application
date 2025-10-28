@@ -9,7 +9,6 @@ import org.example.service.order.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -60,7 +59,7 @@ public class OrderController {
     )
     @PreAuthorize("hasAuthority('ROLE_USER')")
     @GetMapping
-    public List<OrderResponseDto> getUserOrderHistory(Authentication authentication,
+    public Page<OrderResponseDto> getUserOrderHistory(Authentication authentication,
                                                       Pageable pageable) {
         User user = (User) authentication.getPrincipal();
         return orderService.getUserOrderHistory(user.getId(), pageable);

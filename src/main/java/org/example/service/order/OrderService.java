@@ -4,14 +4,13 @@ import org.example.dto.order.OrderRequestDto;
 import org.example.dto.order.OrderResponseDto;
 import org.example.dto.order.OrderUpdateDto;
 import org.example.dto.orderItem.OrderItemResponseDto;
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface OrderService {
     OrderResponseDto createOrder(Long userId, OrderRequestDto orderDto);
 
-    List<OrderResponseDto> getUserOrderHistory(Long authentication, Pageable pageable);
+    Page<OrderResponseDto> getUserOrderHistory(Long authentication, Pageable pageable);
 
     OrderUpdateDto updateOrderStatus(Long authentication, Long orderId,
                                      OrderUpdateDto updateStatus);

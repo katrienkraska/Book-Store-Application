@@ -39,8 +39,8 @@ public interface OrderMapper {
     @Named("total")
     default BigDecimal getTotal(Set<CartItem> cartItems) {
         return cartItems.stream()
-                .map(
-                        i -> i.getBook().getPrice().multiply(BigDecimal.valueOf(i.getQuantity())))
+                .map(i -> i.getBook().getPrice().multiply(
+                        BigDecimal.valueOf(i.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

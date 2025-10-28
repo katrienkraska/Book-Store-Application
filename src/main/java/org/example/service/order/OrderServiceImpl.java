@@ -15,7 +15,6 @@ import org.example.repository.OrderRepository;
 import org.example.repository.OrderItemRepository;
 import org.example.repository.ShoppingCartRepository;
 import jakarta.transaction.Transactional;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,9 +47,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderResponseDto> getUserOrderHistory(Long userId, Pageable pageable) {
-        List<Order> orders = orderRepository.getAllByUserId(userId, pageable);
-        return orderMapper.toOrderDtoList(orders);
+    public Page<OrderResponseDto> getUserOrderHistory(Long userId, Pageable pageable) {
+        return orderRepository.getAllByUserId(userId, pageable)
+                .map(orderMapper::toOrderDto);
     }
 
     @Override
@@ -59,11 +58,15 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Can't find order by id " + orderId));
 
+        String statusStr = updateStatus.getStatus().trim().toUpperCase();
+
         try {
-            order.setStatus(Status.valueOf(updateStatus.getStatus().toUpperCase()));
+            Status status = Status.valueOf(statusStr);
+            order.setStatus(status);
         } catch (IllegalArgumentException e) {
             throw new OrderProcessingException(
-                    "Invalid status: " + updateStatus.getStatus());
+                    "Invalid status: '" + updateStatus.getStatus() +
+                            "'. Allowed values: " + java.util.Arrays.toString(Status.values()));
         }
 
         orderRepository.save(order);
