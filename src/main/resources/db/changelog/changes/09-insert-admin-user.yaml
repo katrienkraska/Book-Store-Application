@@ -12,7 +12,7 @@ databaseChangeLog:
                   value: admin@example.com
               - column:
                   name: password
-                  value: $2a$12$cAEmvPXb4ibkwPw4ptUPP.at9Cwk0I7gnbMuIfOzgK14SUXfNFeZ.
+                  value: $2a$12$Rerg8ttfEspyFAfrj1Bem.oLx3gw4nfqAC7e6uoghCM9tkm8P56GO
               - column:
                   name: first_name
                   value: Admin
