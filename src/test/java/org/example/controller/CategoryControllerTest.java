@@ -1,23 +1,26 @@
 package org.example.controller;
 
-import org.example.dto.category.BookDtoWithoutCategoryIds;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityManager;
 import org.example.dto.category.CategoryDto;
-import org.example.service.category.CategoryService;
+import org.example.model.Book;
+import org.example.model.Category;
+import org.example.repository.BookRepository;
+import org.example.repository.CategoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import java.math.BigDecimal;
-import java.util.List;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -25,142 +28,140 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Testcontainers
+@Transactional
+@AutoConfigureMockMvc
 class CategoryControllerTest {
-    @Mock
-    private CategoryService categoryService;
+    @Container
+    static MySQLContainer<?> mysql =
+            new MySQLContainer<>("mysql:8.0")
+                    .withDatabaseName("testdb")
+                    .withUsername("test")
+                    .withPassword("test");
 
-    @InjectMocks
-    private CategoryController categoryController;
+    @DynamicPropertySource
+    static void props(DynamicPropertyRegistry r) {
+        r.add("spring.datasource.url", mysql::getJdbcUrl);
+        r.add("spring.datasource.username", mysql::getUsername);
+        r.add("spring.datasource.password", mysql::getPassword);
 
+        r.add("spring.jpa.properties.hibernate.dialect",
+                () -> "org.hibernate.dialect.MySQLDialect");
+
+        r.add("spring.jpa.hibernate.ddl-auto", () -> "none");
+    }
+
+    @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private CategoryRepository categoryRepo;
+
+    @Autowired
+    private BookRepository bookRepo;
+
+    @Autowired
+    EntityManager em;
+
     @BeforeEach
-    void setup() {
-        MockitoAnnotations.openMocks(this);
-
-        mockMvc = MockMvcBuilders.standaloneSetup(categoryController)
-                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-                .build();
-
-        objectMapper = new ObjectMapper();
+    void clean() {
+        em.createNativeQuery("DELETE FROM books_categories").executeUpdate();
+        em.createNativeQuery("DELETE FROM books").executeUpdate();
+        em.createNativeQuery("DELETE FROM categories").executeUpdate();
     }
 
     @Test
-    void createCategory_shouldReturnCreatedCategory() throws Exception {
-        Long id = 1L;
-        CategoryDto request = new CategoryDto();
-        request.setName("New Category");
-        request.setDescription("Description");
-
-        CategoryDto response = new CategoryDto();
-        response.setId(id);
-        response.setName("New Category");
-        response.setDescription("Description");
-
-        when(categoryService.save(any(CategoryDto.class))).thenReturn(response);
+    @WithMockUser(roles = "ADMIN")
+    void createCategory_shouldCreate() throws Exception {
+        CategoryDto dto = new CategoryDto();
+        dto.setName("Tech");
+        dto.setDescription("desc");
 
         mockMvc.perform(post("/categories")
                         .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("New Category"))
-                .andExpect(jsonPath("$.description").value("Description"));
+                .andExpect(jsonPath("$.name").value("Tech"));
     }
 
     @Test
-    void getAll() throws Exception {
-        Long id = 1L;
-        CategoryDto categoryDto = new CategoryDto();
-        categoryDto.setId(id);
-        categoryDto.setName("Category");
-        categoryDto.setDescription("Description");
-
-        when(categoryService.findAll(any(Pageable.class)))
-                .thenAnswer(invocationOnMock -> {
-                    Pageable pageable = invocationOnMock.getArgument(0);
-                    return new PageImpl<>(List.of(categoryDto), pageable, 1);
-                });
+    @WithMockUser(roles = "USER")
+    void getAll_shouldReturnCategories() throws Exception {
+        Category c = new Category();
+        c.setName("Category1");
+        c.setDescription("Desc1");
+        categoryRepo.save(c);
 
         mockMvc.perform(get("/categories"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].id").value(1))
-                .andExpect(jsonPath("$.content[0].name").value("Category"))
-                .andExpect(jsonPath("$.content[0].description").value("Description"));
+                .andExpect(jsonPath("$.content[0].name").value("Category1"));
     }
 
     @Test
-    void getCategoryById() throws Exception {
-        Long id = 1L;
-        CategoryDto categoryDto = new CategoryDto();
-        categoryDto.setId(id);
-        categoryDto.setName("Category");
-        categoryDto.setDescription("Description");
+    @WithMockUser(roles = "USER")
+    void getCategoryById_shouldReturnCategory() throws Exception {
+        Category c = new Category();
+        c.setName("History");
+        c.setDescription("d");
+        categoryRepo.save(c);
 
-        when(categoryService.getById(id)).thenReturn(categoryDto);
-
-        mockMvc.perform(get("/categories/{id}", id))
+        mockMvc.perform(get("/categories/" + c.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("Category"))
-                .andExpect(jsonPath("$.description").value("Description"));
+                .andExpect(jsonPath("$.name").value("History"));
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void updateCategory() throws Exception {
-        Long id = 1L;
-        CategoryDto request = new CategoryDto();
-        request.setName("Updated Category");
-        request.setDescription("Description");
+        Category c = new Category();
+        c.setName("Old");
+        c.setDescription("D");
+        categoryRepo.save(c);
 
-        CategoryDto response = new CategoryDto();
-        response.setId(id);
-        response.setName("Updated Category");
-        response.setDescription("Description");
+        CategoryDto dto = new CategoryDto();
+        dto.setName("Updated Category");
+        dto.setDescription("New D");
 
-        when(categoryService.update(any(Long.class), any(CategoryDto.class))).thenReturn(response);
-
-        mockMvc.perform(put("/categories/{id}", id)
+        mockMvc.perform(put("/categories/" + c.getId())
                         .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("Updated Category"))
-                .andExpect(jsonPath("$.description").value("Description"));
+                .andExpect(jsonPath("$.name").value("Updated Category"));
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void deleteCategory() throws Exception {
-        Long id = 1L;
+        Category c = new Category();
+        c.setName("Del");
+        c.setDescription("D");
+        categoryRepo.save(c);
 
-        mockMvc.perform(delete("/categories/{id}", id))
+        mockMvc.perform(delete("/categories/" + c.getId()))
                 .andExpect(status().isNoContent());
     }
 
     @Test
-    void getBooksByCategoryId() throws Exception {
-        Long id = 1L;
+    @WithMockUser(roles = "USER")
+    void getBooksByCategory_shouldReturnBooks() throws Exception {
+        Category category = new Category();
+        category.setName("Science");
+        category = categoryRepo.save(category);
 
-        BookDtoWithoutCategoryIds book1 = new BookDtoWithoutCategoryIds();
-        book1.setTitle("Book A");
-        book1.setAuthor("Author A");
-        book1.setIsbn("111-1111111111");
-        book1.setPrice(BigDecimal.valueOf(10));
-        book1.setDescription("Desc A");
-        book1.setCoverImage("imageA.png");
+        Book book = new Book();
+        book.setTitle("Quantum Physics");
+        book.setAuthor("X");
+        book.setIsbn("111");
+        book.setPrice(BigDecimal.TEN);
+        book.getCategories().add(category);
+        bookRepo.save(book);
 
-        when(categoryService.getBooksByCategoryId(id))
-                .thenReturn(List.of(book1));
-
-        mockMvc.perform(get("/categories/{id}/books", id))
+        mockMvc.perform(get("/categories/" + category.getId() + "/books"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].title").value("Book A"))
-                .andExpect(jsonPath("$[0].author").value("Author A"))
-                .andExpect(jsonPath("$[0].isbn").value("111-1111111111"))
-                .andExpect(jsonPath("$[0].price").value(10))
-                .andExpect(jsonPath("$[0].description").value("Desc A"))
-                .andExpect(jsonPath("$[0].coverImage").value("imageA.png"));
+                .andExpect(jsonPath("$[0].title").value("Quantum Physics"));
     }
 }

@@ -1,23 +1,28 @@
 package org.example.controller;
 
-import org.example.dto.book.BookDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.example.dto.book.CreateBookRequestDto;
-import org.example.service.book.BookService;
+import org.example.model.Book;
+import org.example.model.Category;
+import org.example.repository.BookRepository;
+import org.example.repository.CategoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import java.math.BigDecimal;
 import java.util.List;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -25,115 +30,153 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Testcontainers
+@AutoConfigureMockMvc
+@Transactional
 class BookControllerTest {
-    @Mock
-    private BookService bookService;
+    @Container
+    static MySQLContainer<?> mysql =
+            new MySQLContainer<>("mysql:8.0")
+                    .withDatabaseName("testdb")
+                    .withUsername("test")
+                    .withPassword("test");
 
-    @InjectMocks
-    private BookController bookController;
+    @DynamicPropertySource
+    static void properties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", mysql::getJdbcUrl);
+        registry.add("spring.datasource.username", mysql::getUsername);
+        registry.add("spring.datasource.password", mysql::getPassword);
+        registry.add("spring.jpa.hibernate.ddl-auto", () -> "none");
+        registry.add("spring.jpa.database-platform", () -> "org.hibernate.dialect.MySQL8Dialect");
+    }
 
+    @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private BookRepository bookRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    private Category savedCategory;
 
     @BeforeEach
     void setup() {
-        MockitoAnnotations.openMocks(this);
+        clearDb();
 
-        mockMvc = MockMvcBuilders.standaloneSetup(bookController)
-                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-                .build();
+        Category category = new Category();
+        category.setName("Fantasy");
+        category.setDescription("desc");
+        savedCategory = categoryRepository.save(category);
+    }
 
-        objectMapper = new ObjectMapper();
+    private void clearDb() {
+        entityManager.createNativeQuery("DELETE FROM books_categories").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM order_items").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM orders").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM cart_items").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM shopping_carts").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM books").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM categories").executeUpdate();
+        entityManager.flush();
     }
 
     @Test
+    @WithMockUser(roles = "USER")
     void getBookById_returnsBookDto() throws Exception {
-        Long id = 1L;
-        BookDto bookDto = new BookDto();
-        bookDto.setId(id);
-        bookDto.setTitle("Title");
+        Book book = new Book();
+        book.setTitle("Test");
+        book.setAuthor("A");
+        book.setIsbn("111");
+        book.setPrice(BigDecimal.TEN);
+        book.getCategories().add(savedCategory);
+        bookRepository.save(book);
 
-        when(bookService.getBookById(id)).thenReturn(bookDto);
-
-        mockMvc.perform(get("/books/{id}", id))
+        mockMvc.perform(get("/books/" + book.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(id))
-                .andExpect(jsonPath("$.title").value("Title"));
+                .andExpect(jsonPath("$.title").value("Test"))
+                .andExpect(jsonPath("$.author").value("A"));
     }
 
     @Test
-    void findAll_returnsBooks() throws Exception {
-        BookDto bookDto = new BookDto();
-        bookDto.setId(1L);
-        bookDto.setTitle("Test Book");
+    @WithMockUser(roles = "USER")
+    void findAll_shouldReturnPagedBooks() throws Exception {
+        Book book = new Book();
+        book.setTitle("X");
+        book.setAuthor("A");
+        book.setIsbn("222");
+        book.setPrice(BigDecimal.ONE);
+        book.getCategories().add(savedCategory);
+        bookRepository.save(book);
 
-        when(bookService.findAll(any(Pageable.class)))
-                .thenAnswer(invocation -> {
-                    Pageable pageable = invocation.getArgument(0);
-                    return new PageImpl<>(List.of(bookDto), pageable, 1);
-                });
-
-        mockMvc.perform(get("/books")
-                        .param("page", "0")
-                        .param("size", "10"))
+        mockMvc.perform(get("/books?page=0&size=10"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].id").value(1))
-                .andExpect(jsonPath("$.content[0].title").value("Test Book"))
-                .andExpect(jsonPath("$.totalElements").value(1));
+                .andExpect(jsonPath("$.content[0].title").value("X"));
     }
 
     @Test
-    void createBook_returnsCreatedBook() throws Exception {
-        CreateBookRequestDto request = new CreateBookRequestDto();
-        request.setTitle("New Book");
-        request.setAuthor("Author Name");
-        request.setIsbn("123-4567890123");
-        request.setPrice(BigDecimal.valueOf(100));
-        request.setCategoryIds(List.of(1L, 2L));
-
-        BookDto response = new BookDto();
-        response.setId(1L);
-        response.setTitle("New Book");
-
-        when(bookService.createBook(any(CreateBookRequestDto.class))).thenReturn(response);
+    @WithMockUser(roles = "ADMIN")
+    void createBook_shouldCreateNewBook() throws Exception {
+        CreateBookRequestDto dto = new CreateBookRequestDto();
+        dto.setTitle("New Book");
+        dto.setAuthor("A");
+        dto.setIsbn("ISBN-1");
+        dto.setPrice(BigDecimal.valueOf(20));
+        dto.setDescription("desc");
+        dto.setCategoryIds(List.of(savedCategory.getId()));
 
         mockMvc.perform(post("/books")
                         .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.title").value("New Book"));
     }
 
     @Test
-    void update_returnsUpdatedBook() throws Exception {
-        Long id = 1L;
-        CreateBookRequestDto request = new CreateBookRequestDto();
-        request.setTitle("Updated Book");
-        request.setAuthor("Author Name");
-        request.setIsbn("123-4567890123");
-        request.setPrice(BigDecimal.valueOf(150));
-        request.setCategoryIds(List.of(1L, 2L));
+    @WithMockUser(roles = "ADMIN")
+    void updateBook_shouldUpdate() throws Exception {
+        Book book = new Book();
+        book.setTitle("Old");
+        book.setAuthor("A");
+        book.setIsbn("333");
+        book.setPrice(BigDecimal.ONE);
+        book.getCategories().add(savedCategory);
+        bookRepository.save(book);
 
-        BookDto response = new BookDto();
-        response.setId(id);
-        response.setTitle("Updated Book");
+        CreateBookRequestDto dto = new CreateBookRequestDto();
+        dto.setTitle("Updated");
+        dto.setAuthor("A");
+        dto.setIsbn("333");
+        dto.setPrice(BigDecimal.TEN);
+        dto.setCategoryIds(List.of(savedCategory.getId()));
 
-        when(bookService.update(any(Long.class), any(CreateBookRequestDto.class))).thenReturn(response);
-
-        mockMvc.perform(put("/books/{id}", id)
+        mockMvc.perform(put("/books/" + book.getId())
                         .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(id))
-                .andExpect(jsonPath("$.title").value("Updated Book"));
+                .andExpect(jsonPath("$.title").value("Updated"));
     }
 
     @Test
-    void delete_returnsNoContent() throws Exception {
-        Long id = 1L;
+    @WithMockUser(roles = "ADMIN")
+    void deleteBook_shouldReturnNoContent() throws Exception {
+        Book book = new Book();
+        book.setTitle("Del");
+        book.setAuthor("A");
+        book.setIsbn("444");
+        book.setPrice(BigDecimal.ONE);
+        book.getCategories().add(savedCategory);
+        bookRepository.save(book);
 
-        mockMvc.perform(delete("/books/{id}", id))
+        mockMvc.perform(delete("/books/" + book.getId()))
                 .andExpect(status().isNoContent());
     }
 }
