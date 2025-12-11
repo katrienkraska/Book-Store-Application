@@ -3,7 +3,7 @@ package org.example.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
-import org.example.dto.book.BookDto;
+import org.example.dto.category.BookDtoWithoutCategoryIds;
 import org.example.dto.category.CategoryDto;
 import org.example.model.Book;
 import org.example.model.Category;
@@ -206,16 +206,14 @@ class CategoryControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        List<BookDto> books = objectMapper.readValue(
+        List<BookDtoWithoutCategoryIds> books = objectMapper.readValue(
                 json,
-                new TypeReference<List<BookDto>>() {
-                }
+                new TypeReference<List<BookDtoWithoutCategoryIds>>() {}
         );
 
         assertThat(books).hasSize(1);
 
-        BookDto actual = books.get(0);
-        assertThat(actual.getId()).isEqualTo(savedBook.getId());
+        BookDtoWithoutCategoryIds actual = books.get(0);
         assertThat(actual.getTitle()).isEqualTo(savedBook.getTitle());
         assertThat(actual.getAuthor()).isEqualTo(savedBook.getAuthor());
         assertThat(actual.getIsbn()).isEqualTo(savedBook.getIsbn());
