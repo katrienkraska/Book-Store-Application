@@ -12,6 +12,7 @@ import org.example.dto.book.CreateBookRequestDto;
 import org.example.exception.EntityNotFoundException;
 import org.example.mapper.BookMapper;
 import org.example.model.Book;
+import org.example.model.Category;
 import org.example.repository.BookRepository;
 import org.example.repository.CategoryRepository;
 import org.junit.jupiter.api.Test;
@@ -109,25 +110,25 @@ class BookServiceImplTest {
         CreateBookRequestDto request = new CreateBookRequestDto();
         request.setTitle("New Book");
 
-        Book saved = new Book();
-        saved.setId(id);
-        saved.setTitle("New Book");
+        Book savedBook = new Book();
+        savedBook.setId(id);
+        savedBook.setTitle("New Book");
 
         BookDto bookDto = new BookDto();
         bookDto.setId(id);
         bookDto.setTitle("New Book");
 
-        when(bookMapper.toModel(request)).thenReturn(saved);
-        when(bookRepository.save(saved)).thenReturn(saved);
-        when(bookMapper.toDto(saved)).thenReturn(bookDto);
+        when(bookMapper.toModel(request)).thenReturn(savedBook);
+        when(bookRepository.save(savedBook)).thenReturn(savedBook);
+        when(bookMapper.toDto(savedBook)).thenReturn(bookDto);
 
         BookDto result = bookService.createBook(request);
 
         assertEquals(bookDto, result);
 
         verify(bookMapper).toModel(request);
-        verify(bookRepository).save(saved);
-        verify(bookMapper).toDto(saved);
+        verify(bookRepository).save(savedBook);
+        verify(bookMapper).toDto(savedBook);
     }
 
     @Test
@@ -203,7 +204,7 @@ class BookServiceImplTest {
     }
 
     @Test
-    void save_withCategories_success() {
+    void save_withoutCategories_success() {
         Long id = 1L;
 
         CreateBookRequestDto request = new CreateBookRequestDto();
@@ -248,5 +249,48 @@ class BookServiceImplTest {
                 () -> bookService.save(request));
 
         verify(categoryRepository).findById(100L);
+    }
+
+    @Test
+    void save_withCategories_success() {
+        Long bookId = 1L;
+        Long categoryId = 10L;
+
+        CreateBookRequestDto request = new CreateBookRequestDto();
+        request.setTitle("Books");
+        request.setCategoryIds(List.of(categoryId));
+
+        Category category = new Category();
+        category.setId(categoryId);
+        category.setName("Tech");
+
+        Book entity = new Book();
+        entity.setTitle("Books");
+
+        Book savedEntity = new Book();
+        savedEntity.setId(bookId);
+        savedEntity.setTitle("Books");
+        savedEntity.getCategories().add(category);
+
+        BookDto expectedDto = new BookDto();
+        expectedDto.setId(bookId);
+        expectedDto.setTitle("Books");
+
+        when(bookMapper.toModel(request)).thenReturn(entity);
+        when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
+        when(bookRepository.save(entity)).thenReturn(savedEntity);
+        when(bookMapper.toDto(savedEntity)).thenReturn(expectedDto);
+
+        BookDto result = bookService.save(request);
+
+        assertEquals(expectedDto, result);
+
+        assertEquals(1, entity.getCategories().size());
+        assertEquals(categoryId, entity.getCategories().iterator().next().getId());
+
+        verify(bookMapper).toModel(request);
+        verify(categoryRepository).findById(categoryId);
+        verify(bookRepository).save(entity);
+        verify(bookMapper).toDto(savedEntity);
     }
 }

@@ -1,13 +1,14 @@
 package org.example.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.EntityManager;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import org.example.dto.book.BookDto;
 import org.example.dto.category.CategoryDto;
 import org.example.model.Book;
 import org.example.model.Category;
 import org.example.repository.BookRepository;
 import org.example.repository.CategoryRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -15,23 +16,29 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import java.math.BigDecimal;
+import java.util.List;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
 @Transactional
 @AutoConfigureMockMvc
+@Sql(
+        scripts = "/sql/clear_tables.sql",
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+)
 class CategoryControllerTest {
     @Container
     static MySQLContainer<?> mysql =
@@ -41,15 +48,15 @@ class CategoryControllerTest {
                     .withPassword("test");
 
     @DynamicPropertySource
-    static void props(DynamicPropertyRegistry r) {
-        r.add("spring.datasource.url", mysql::getJdbcUrl);
-        r.add("spring.datasource.username", mysql::getUsername);
-        r.add("spring.datasource.password", mysql::getPassword);
+    static void props(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", mysql::getJdbcUrl);
+        registry.add("spring.datasource.username", mysql::getUsername);
+        registry.add("spring.datasource.password", mysql::getPassword);
 
-        r.add("spring.jpa.properties.hibernate.dialect",
+        registry.add("spring.jpa.properties.hibernate.dialect",
                 () -> "org.hibernate.dialect.MySQLDialect");
 
-        r.add("spring.jpa.hibernate.ddl-auto", () -> "none");
+        registry.add("spring.jpa.hibernate.ddl-auto", () -> "none");
     }
 
     @Autowired
@@ -59,90 +66,126 @@ class CategoryControllerTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private CategoryRepository categoryRepo;
+    private CategoryRepository categoryRepository;
 
     @Autowired
-    private BookRepository bookRepo;
-
-    @Autowired
-    EntityManager em;
-
-    @BeforeEach
-    void clean() {
-        em.createNativeQuery("DELETE FROM books_categories").executeUpdate();
-        em.createNativeQuery("DELETE FROM books").executeUpdate();
-        em.createNativeQuery("DELETE FROM categories").executeUpdate();
-    }
+    private BookRepository bookRepository;
 
     @Test
     @WithMockUser(roles = "ADMIN")
     void createCategory_shouldCreate() throws Exception {
-        CategoryDto dto = new CategoryDto();
-        dto.setName("Tech");
-        dto.setDescription("desc");
+        CategoryDto categoryDto = new CategoryDto();
+        categoryDto.setName("Tech");
+        categoryDto.setDescription("Description");
 
-        mockMvc.perform(post("/categories")
+        String json = mockMvc.perform(post("/categories")
                         .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(dto)))
+                        .content(objectMapper.writeValueAsString(categoryDto)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value("Tech"));
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        CategoryDto actual = objectMapper.readValue(json, CategoryDto.class);
+
+        assertThat(actual.getId()).isNotNull();
+        assertThat(actual.getName()).isEqualTo(categoryDto.getName());
+        assertThat(actual.getDescription()).isEqualTo(categoryDto.getDescription());
     }
 
     @Test
     @WithMockUser(roles = "USER")
     void getAll_shouldReturnCategories() throws Exception {
-        Category c = new Category();
-        c.setName("Category1");
-        c.setDescription("Desc1");
-        categoryRepo.save(c);
+        Category category = new Category();
+        category.setName("Category1");
+        category.setDescription("Description1");
+        Category savedCategory = categoryRepository.save(category);
 
-        mockMvc.perform(get("/categories"))
+        String json = mockMvc.perform(get("/categories"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].name").value("Category1"));
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode root = objectMapper.readTree(json);
+        JsonNode contentNode = root.get("content");
+
+        List<CategoryDto> categories = objectMapper.readValue(
+                contentNode.toString(),
+                new TypeReference<List<CategoryDto>>() {
+                }
+        );
+
+        assertThat(categories).hasSize(1);
+
+        CategoryDto actual = categories.get(0);
+        assertThat(actual.getId()).isEqualTo(savedCategory.getId());
+        assertThat(actual.getName()).isEqualTo(savedCategory.getName());
+        assertThat(actual.getDescription()).isEqualTo(savedCategory.getDescription());
     }
 
     @Test
     @WithMockUser(roles = "USER")
     void getCategoryById_shouldReturnCategory() throws Exception {
-        Category c = new Category();
-        c.setName("History");
-        c.setDescription("d");
-        categoryRepo.save(c);
+        Category category = new Category();
+        category.setName("History");
+        category.setDescription("Description");
+        Category savedCategory = categoryRepository.save(category);
 
-        mockMvc.perform(get("/categories/" + c.getId()))
+        String json = mockMvc.perform(get("/categories/" + savedCategory.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("History"));
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        CategoryDto actual = objectMapper.readValue(json, CategoryDto.class);
+
+        assertThat(actual.getId()).isEqualTo(savedCategory.getId());
+        assertThat(actual.getName()).isEqualTo(savedCategory.getName());
+        assertThat(actual.getDescription()).isEqualTo(savedCategory.getDescription());
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     void updateCategory() throws Exception {
-        Category c = new Category();
-        c.setName("Old");
-        c.setDescription("D");
-        categoryRepo.save(c);
+        Category category = new Category();
+        category.setName("Old");
+        category.setDescription("Description");
+        Category savedCategory = categoryRepository.save(category);
 
-        CategoryDto dto = new CategoryDto();
-        dto.setName("Updated Category");
-        dto.setDescription("New D");
+        CategoryDto categoryDto = new CategoryDto();
+        categoryDto.setName("Updated Category");
+        categoryDto.setDescription("New Description");
 
-        mockMvc.perform(put("/categories/" + c.getId())
+        String json = mockMvc.perform(put("/categories/" + savedCategory.getId())
                         .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(dto)))
+                        .content(objectMapper.writeValueAsString(categoryDto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Updated Category"));
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        CategoryDto actual = objectMapper.readValue(json, CategoryDto.class);
+
+        assertThat(actual.getId()).isEqualTo(savedCategory.getId());
+        assertThat(actual.getName()).isEqualTo(categoryDto.getName());
+        assertThat(actual.getDescription()).isEqualTo(categoryDto.getDescription());
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     void deleteCategory() throws Exception {
-        Category c = new Category();
-        c.setName("Del");
-        c.setDescription("D");
-        categoryRepo.save(c);
+        Category category = new Category();
+        category.setName("Delete");
+        category.setDescription("Description");
+        categoryRepository.save(category);
 
-        mockMvc.perform(delete("/categories/" + c.getId()))
+        Category savedCategory = categoryRepository.save(category);
+
+        mockMvc.perform(delete("/categories/" + savedCategory.getId()))
                 .andExpect(status().isNoContent());
+
+        assertThat(categoryRepository.findById(savedCategory.getId())).isEmpty();
     }
 
     @Test
@@ -150,18 +193,35 @@ class CategoryControllerTest {
     void getBooksByCategory_shouldReturnBooks() throws Exception {
         Category category = new Category();
         category.setName("Science");
-        category = categoryRepo.save(category);
+        Category savedCategory = categoryRepository.save(category);
 
         Book book = new Book();
         book.setTitle("Quantum Physics");
         book.setAuthor("X");
         book.setIsbn("111");
         book.setPrice(BigDecimal.TEN);
-        book.getCategories().add(category);
-        bookRepo.save(book);
+        book.getCategories().add(savedCategory);
+        Book savedBook = bookRepository.save(book);
 
-        mockMvc.perform(get("/categories/" + category.getId() + "/books"))
+        String json = mockMvc.perform(get("/categories/" + savedCategory.getId() + "/books"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].title").value("Quantum Physics"));
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        List<BookDto> books = objectMapper.readValue(
+                json,
+                new TypeReference<List<BookDto>>() {
+                }
+        );
+
+        assertThat(books).hasSize(1);
+
+        BookDto actual = books.get(0);
+        assertThat(actual.getId()).isEqualTo(savedBook.getId());
+        assertThat(actual.getTitle()).isEqualTo(savedBook.getTitle());
+        assertThat(actual.getAuthor()).isEqualTo(savedBook.getAuthor());
+        assertThat(actual.getIsbn()).isEqualTo(savedBook.getIsbn());
+        assertThat(actual.getPrice()).isEqualTo(savedBook.getPrice());
     }
 }

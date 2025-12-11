@@ -1,8 +1,9 @@
 package org.example.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import org.example.dto.book.BookDto;
 import org.example.dto.book.CreateBookRequestDto;
 import org.example.model.Book;
 import org.example.model.Category;
@@ -16,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.MySQLContainer;
@@ -23,17 +25,21 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import java.math.BigDecimal;
 import java.util.List;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
 @AutoConfigureMockMvc
 @Transactional
+@Sql(
+        scripts = "/sql/clear_tables.sql",
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+)
 class BookControllerTest {
     @Container
     static MySQLContainer<?> mysql =
@@ -63,30 +69,14 @@ class BookControllerTest {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
     private Category savedCategory;
 
     @BeforeEach
     void setup() {
-        clearDb();
-
         Category category = new Category();
         category.setName("Fantasy");
-        category.setDescription("desc");
+        category.setDescription("Description");
         savedCategory = categoryRepository.save(category);
-    }
-
-    private void clearDb() {
-        entityManager.createNativeQuery("DELETE FROM books_categories").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM order_items").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM orders").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM cart_items").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM shopping_carts").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM books").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM categories").executeUpdate();
-        entityManager.flush();
     }
 
     @Test
@@ -98,12 +88,21 @@ class BookControllerTest {
         book.setIsbn("111");
         book.setPrice(BigDecimal.TEN);
         book.getCategories().add(savedCategory);
-        bookRepository.save(book);
+        Book savedBook = bookRepository.save(book);
 
-        mockMvc.perform(get("/books/" + book.getId()))
+        String json = mockMvc.perform(get("/books/" + savedBook.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("Test"))
-                .andExpect(jsonPath("$.author").value("A"));
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        BookDto actual = objectMapper.readValue(json, BookDto.class);
+
+        assertThat(actual.getId()).isEqualTo(savedBook.getId());
+        assertThat(actual.getTitle()).isEqualTo(savedBook.getTitle());
+        assertThat(actual.getAuthor()).isEqualTo(savedBook.getAuthor());
+        assertThat(actual.getIsbn()).isEqualTo(savedBook.getIsbn());
+        assertThat(actual.getPrice()).isEqualTo(savedBook.getPrice());
     }
 
     @Test
@@ -115,29 +114,61 @@ class BookControllerTest {
         book.setIsbn("222");
         book.setPrice(BigDecimal.ONE);
         book.getCategories().add(savedCategory);
-        bookRepository.save(book);
+        Book savedBook = bookRepository.save(book);
 
-        mockMvc.perform(get("/books?page=0&size=10"))
+        String json = mockMvc.perform(get("/books?page=0&size=10"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].title").value("X"));
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode root = objectMapper.readTree(json);
+        JsonNode contentNode = root.get("content");
+
+        List<BookDto> books = objectMapper.readValue(
+                contentNode.toString(),
+                new TypeReference<List<BookDto>>() {
+                }
+        );
+
+        assertThat(books).hasSize(1);
+
+        BookDto actual = books.get(0);
+
+        assertThat(actual.getId()).isEqualTo(savedBook.getId());
+        assertThat(actual.getTitle()).isEqualTo(savedBook.getTitle());
+        assertThat(actual.getAuthor()).isEqualTo(savedBook.getAuthor());
+        assertThat(actual.getIsbn()).isEqualTo(savedBook.getIsbn());
+        assertThat(actual.getPrice()).isEqualTo(savedBook.getPrice());
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     void createBook_shouldCreateNewBook() throws Exception {
-        CreateBookRequestDto dto = new CreateBookRequestDto();
-        dto.setTitle("New Book");
-        dto.setAuthor("A");
-        dto.setIsbn("ISBN-1");
-        dto.setPrice(BigDecimal.valueOf(20));
-        dto.setDescription("desc");
-        dto.setCategoryIds(List.of(savedCategory.getId()));
+        CreateBookRequestDto bookRequestDto = new CreateBookRequestDto();
+        bookRequestDto.setTitle("New Book");
+        bookRequestDto.setAuthor("A");
+        bookRequestDto.setIsbn("ISBN-1");
+        bookRequestDto.setPrice(BigDecimal.valueOf(20));
+        bookRequestDto.setDescription("Description");
+        bookRequestDto.setCategoryIds(List.of(savedCategory.getId()));
 
-        mockMvc.perform(post("/books")
+        String json = mockMvc.perform(post("/books")
                         .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(dto)))
+                        .content(objectMapper.writeValueAsString(bookRequestDto)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.title").value("New Book"));
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        BookDto actual = objectMapper.readValue(json, BookDto.class);
+
+        assertThat(actual.getId()).isNotNull();
+        assertThat(actual.getTitle()).isEqualTo(bookRequestDto.getTitle());
+        assertThat(actual.getAuthor()).isEqualTo(bookRequestDto.getAuthor());
+        assertThat(actual.getIsbn()).isEqualTo(bookRequestDto.getIsbn());
+        assertThat(actual.getPrice()).isEqualTo(bookRequestDto.getPrice());
+        assertThat(actual.getDescription()).isEqualTo(bookRequestDto.getDescription());
     }
 
     @Test
@@ -149,20 +180,31 @@ class BookControllerTest {
         book.setIsbn("333");
         book.setPrice(BigDecimal.ONE);
         book.getCategories().add(savedCategory);
-        bookRepository.save(book);
+        Book savedBook = bookRepository.save(book);
 
-        CreateBookRequestDto dto = new CreateBookRequestDto();
-        dto.setTitle("Updated");
-        dto.setAuthor("A");
-        dto.setIsbn("333");
-        dto.setPrice(BigDecimal.TEN);
-        dto.setCategoryIds(List.of(savedCategory.getId()));
+        CreateBookRequestDto bookRequestDto = new CreateBookRequestDto();
+        bookRequestDto.setTitle("Updated");
+        bookRequestDto.setAuthor("A");
+        bookRequestDto.setIsbn("333");
+        bookRequestDto.setPrice(BigDecimal.TEN);
+        bookRequestDto.setDescription("new description");
+        bookRequestDto.setCategoryIds(List.of(savedCategory.getId()));
 
-        mockMvc.perform(put("/books/" + book.getId())
+        String json = mockMvc.perform(put("/books/" + savedBook.getId())
                         .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(dto)))
+                        .content(objectMapper.writeValueAsString(bookRequestDto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("Updated"));
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        BookDto actual = objectMapper.readValue(json, BookDto.class);
+
+        assertThat(actual.getId()).isEqualTo(savedBook.getId());
+        assertThat(actual.getTitle()).isEqualTo(bookRequestDto.getTitle());
+        assertThat(actual.getAuthor()).isEqualTo(bookRequestDto.getAuthor());
+        assertThat(actual.getIsbn()).isEqualTo(bookRequestDto.getIsbn());
+        assertThat(actual.getPrice()).isEqualTo(bookRequestDto.getPrice());
     }
 
     @Test
@@ -174,9 +216,11 @@ class BookControllerTest {
         book.setIsbn("444");
         book.setPrice(BigDecimal.ONE);
         book.getCategories().add(savedCategory);
-        bookRepository.save(book);
+        Book savedBook = bookRepository.save(book);
 
-        mockMvc.perform(delete("/books/" + book.getId()))
+        mockMvc.perform(delete("/books/" + savedBook.getId()))
                 .andExpect(status().isNoContent());
+
+        assertThat(bookRepository.findById(savedBook.getId())).isEmpty();
     }
 }

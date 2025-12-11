@@ -1,6 +1,5 @@
 package org.example.repository;
 
-import jakarta.persistence.EntityManager;
 import org.example.model.Book;
 import org.example.model.Category;
 import org.junit.jupiter.api.DisplayName;
@@ -10,39 +9,51 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.math.BigDecimal;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
 class BookRepositoryTest {
-
     @Autowired
     private BookRepository bookRepository;
-
-    @Autowired
-    private EntityManager entityManager;
 
     @Autowired
     private CategoryRepository categoryRepository;
 
     @Test
+    @DisplayName("findByCategoriesId should return books linked to this category")
     void testFindByCategoriesId() {
         Category category = new Category();
         category.setName("Fiction");
-        categoryRepository.save(category);
+        Category savedCategory = categoryRepository.save(category);
 
         Book book = new Book();
         book.setTitle("Test Book");
         book.setAuthor("Author");
         book.setIsbn("123-456-789");
         book.setPrice(BigDecimal.valueOf(19.99));
-        book.getCategories().add(category);
+        book.getCategories().add(savedCategory);
+        Book savedBook = bookRepository.save(book);
 
-        bookRepository.save(book);
+        List<Book> result = bookRepository.findByCategoriesId(savedCategory.getId());
 
-        List<Book> result = bookRepository.findByCategoriesId(category.getId());
+        assertThat(result).hasSize(1);
 
-        assertEquals(1, result.size());
-        assertEquals("Test Book", result.get(0).getTitle());
+        Book found = result.get(0);
+
+        assertThat(found.getId()).isNotNull();
+        assertThat(found.getTitle()).isEqualTo(savedBook.getTitle());
+        assertThat(found.getAuthor()).isEqualTo(savedBook.getAuthor());
+        assertThat(found.getIsbn()).isEqualTo(savedBook.getIsbn());
+        assertThat(found.getPrice()).isEqualTo(savedBook.getPrice());
+
+        assertThat(found.getCategories()).hasSize(1);
+
+        Category foundCategory = found.getCategories()
+                .stream()
+                .findFirst()
+                .orElseThrow();
+
+        assertThat(foundCategory.getId()).isEqualTo(savedCategory.getId());
+        assertThat(foundCategory.getName()).isEqualTo(savedCategory.getName());
     }
 
     @Test
@@ -50,11 +61,9 @@ class BookRepositoryTest {
     void testFindByCategoryId_NoBooks() {
         Category category = new Category();
         category.setName("Empty");
-        entityManager.persist(category);
+        Category savedCategory = categoryRepository.save(category);
 
-        entityManager.flush();
-
-        List<Book> result = bookRepository.findByCategoriesId(category.getId());
+        List<Book> result = bookRepository.findByCategoriesId(savedCategory.getId());
 
         assertThat(result).isEmpty();
     }

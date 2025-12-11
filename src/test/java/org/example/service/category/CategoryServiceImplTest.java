@@ -60,7 +60,7 @@ class CategoryServiceImplTest {
         categoryDto1.setId(1L);
 
         CategoryDto categoryDto2 = new CategoryDto();
-        category2.setId(2L);
+        categoryDto2.setId(2L);
 
         Page<Category> categoriesPage = new PageImpl<>(List.of(category1, category2));
 
