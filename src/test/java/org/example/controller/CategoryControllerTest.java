@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 @AutoConfigureMockMvc
 @Sql(
-        scripts = "/sql/clear_tables.sql",
+        scripts = "/sql/delete-all-data.sql",
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
 )
 class CategoryControllerTest {
