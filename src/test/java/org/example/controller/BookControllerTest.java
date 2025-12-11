@@ -36,10 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Testcontainers
 @AutoConfigureMockMvc
 @Transactional
-@Sql(
-        scripts = "src/test/resources/database/delete-all-data.sql",
-        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-)
+@Sql("classpath:database/delete-all-data.sql")
 class BookControllerTest {
     @Container
     static MySQLContainer<?> mysql =
