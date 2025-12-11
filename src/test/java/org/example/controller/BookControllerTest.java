@@ -37,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 @Sql(
-        scripts = "/delete-all-data.sql",
+        scripts = "src/test/resources/database/delete-all-data.sql",
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
 )
 class BookControllerTest {
