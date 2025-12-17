@@ -4,7 +4,7 @@ The system supports JWT-based authentication, role-based authorization (USER / A
 The project is designed using a layered architecture and modern backend practices, making it scalable, secure, and suitable for real-world use cases or educational purposes.
 
 ---
-
+```text
 ## Features
 - User registration and authentication (JWT)
 - Role-based access control (`ROLE_USER`, `ROLE_ADMIN`)
@@ -40,7 +40,6 @@ Checkstyle — code quality enforcement
 ## Project Structure
 The application follows a classic Spring Boot layered architecture:
 
-```text
 src/main/java/org/example
 ├── config        # Security & JWT configuration
 ├── controller    # REST controllers
