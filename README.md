@@ -40,6 +40,7 @@ Checkstyle — code quality enforcement
 ## Project Structure
 The application follows a classic Spring Boot layered architecture:
 
+```text
 src/main/java/org/example
 ├── config        # Security & JWT configuration
 ├── controller    # REST controllers
@@ -50,8 +51,14 @@ src/main/java/org/example
 ├── repository    # Spring Data repositories
 ├── service       # Business logic
 └── validation    # Custom validators
-src/main/resources — application properties & Liquibase changelogs
-src/test — unit and integration tests (Testcontainers)
+
+src/main/resources
+├── application.properties
+└── db
+    └── changelog   # Liquibase changelogs
+
+src/test
+└── unit and integration tests (Testcontainers)
 
 ## Controllers Overview
 
