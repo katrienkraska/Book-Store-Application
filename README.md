@@ -48,7 +48,7 @@ The diagram below represents the core domain entities and their relationships.
 
 ---
 
-```md
+
 ## Project Structure
 
 The application follows a classic Spring Boot layered architecture:
@@ -72,6 +72,7 @@ src/main/resources
 
 src/test
 └── unit and integration tests (Testcontainers)
+```md
 
 ---
 
