@@ -55,7 +55,7 @@ The diagram below represents the core domain entities and their relationships.
 
 The application follows a classic Spring Boot layered architecture:
 
-` ```text
+```text
 src/main/java/org/example
 ├── config        # Security & JWT configuration
 ├── controller    # REST controllers
@@ -74,6 +74,7 @@ src/main/resources
 
 src/test
 └── unit and integration tests (Testcontainers)`
+```text
 
 ---
 
