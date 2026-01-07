@@ -85,13 +85,6 @@ After starting the application, Swagger UI is available at:
 
 ---
 
-## API Testing
-
-Postman collection is available in:  
-`docs/postman/book-store.postman_collection.json`
-
----
-
 ## Contact
 
 For questions or feedback, feel free to reach out:
