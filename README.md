@@ -1,4 +1,5 @@
 # Book Store Application
+
 **Book Store Application** is a RESTful backend application built with **Java** and **Spring Boot** that provides a complete solution for managing an online bookstore.
 The system supports **JWT-based authentication**, **role-based authorization (USER / ADMIN)**, and core e-commerce features including **book and category management**, **shopping cart**, and **order processing**.
 The project follows a **layered architecture** and modern backend best practices, making it scalable, secure, and suitable for real-world use cases as well as educational purposes.
@@ -6,6 +7,7 @@ The project follows a **layered architecture** and modern backend best practices
 ---
 
 ## Domain Model Diagram
+
 The diagram below represents the core domain entities and their relationships.
 ![Domain Model Diagram](docs/model-diagram.png)
 
@@ -47,6 +49,7 @@ The diagram below represents the core domain entities and their relationships.
 ---
 
 ## Project Structure
+
 The application follows a classic Spring Boot layered architecture:
 
 ```text
@@ -68,22 +71,26 @@ src/main/resources
 
 src/test
 └── unit and integration tests (Testcontainers)
-text```
+
 ---
 
 ## API Documentation (Swagger)
-After starting the application, Swagger UI is available at:
+
+After starting the application, Swagger UI is available at:  
 [Swagger UI](http://localhost:8088/api/swagger-ui.html)
 
 ---
 
 ## API Testing
-Postman collection is available in:
-docs/postman/book-store.postman_collection.json
+
+Postman collection is available in:  
+`docs/postman/book-store.postman_collection.json`
 
 ---
 
 ## Contact
+
 For questions or feedback, feel free to reach out:
-GitHub: katrienkraska
-Email: kate2002.kk42@gmail.com
+
+- **GitHub:** katrienkraska  
+- **Email:** kate2002.kk42@gmail.com
