@@ -73,7 +73,7 @@ src/main/resources
     └── changelog   # Liquibase changelogs
 
 src/test
-└── unit and integration tests (Testcontainers)`
+└── unit and integration tests (Testcontainers)
 ```
 
 ---
