@@ -89,5 +89,5 @@ After starting the application, Swagger UI is available at:
 
 For questions or feedback, feel free to reach out:
 
-- **GitHub:** katrienkraska
+- **GitHub:** katrienkraska  
 - **Email:** kate2002.kk42@gmail.com
