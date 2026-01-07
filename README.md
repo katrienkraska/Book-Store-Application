@@ -12,7 +12,7 @@ The project follows a **layered architecture** and modern backend best practices
 
 The diagram below represents the core domain entities and their relationships.
 
-![Domain Model Diagram](images/model-diagram.png)
+![Domain Model Diagram](README.md/model-diagram.jpg)
 
 ---
 
