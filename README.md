@@ -5,6 +5,12 @@ The project follows a **layered architecture** and modern backend best practices
 
 ---
 
+## Domain Model Diagram
+The diagram below represents the core domain entities and their relationships.
+![Domain Model Diagram](docs/model-diagram.png)
+
+---
+
 ## Features
 
 - User registration and authentication (JWT)
@@ -40,8 +46,7 @@ The project follows a **layered architecture** and modern backend best practices
 
 ---
 
-## 🗂 Project Structure
-
+## Project Structure
 The application follows a classic Spring Boot layered architecture:
 
 ```text
@@ -64,9 +69,19 @@ src/main/resources
 src/test
 └── unit and integration tests (Testcontainers)
 
+---
+
 ## API Documentation (Swagger)
 After starting the application, Swagger UI is available at:
-http://localhost:8088/api/swagger-ui.html
+[Swagger UI](http://localhost:8088/api/swagger-ui.html)
+
+---
+
+## API Testing
+Postman collection is available in:
+docs/postman/book-store.postman_collection.json
+
+---
 
 ## Contact
 For questions or feedback, feel free to reach out:
