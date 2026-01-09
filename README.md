@@ -115,6 +115,7 @@ spring.datasource.password=your_mysql_password
 ```text
 mvn clean package
 mvn spring-boot:run
+mvn test
 ```
 
 ---
