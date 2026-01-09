@@ -76,6 +76,48 @@ src/test
 └── unit and integration tests (Testcontainers)
 ```
 
+## **How to Clone and Run the Project**
+
+Follow these steps to clone the project from GitHub and run it on your local machine:
+
+1️⃣ Clone the Repository Open your terminal or command prompt, and run the following commands:
+```text
+git clone https://github.com/katrienkraska/Book-Store-Application.git
+cd Book-Store-Application
+```
+2️⃣ Make sure you have the following installed:
+
+- **Java JDK (version 17 or higher recommended)**
+- **Maven (for building and running the project)**
+- **MySQL**
+
+You can check this using cmd commands:
+```text
+java --version
+mvn --version
+mysql --version
+```
+
+3️⃣ Configure the Database Check the src/main/resources/application.properties file for database configuration and adjust the database credentials in application.properties.
+
+Configuration file is located at:
+```text
+src/main/resources/application.properties
+```
+
+```text
+spring.datasource.url=jdbc:mysql://localhost:3306/bookstore
+spring.datasource.username=your_mysql_user
+spring.datasource.password=your_mysql_password
+```
+
+4️⃣ Build and Run the Application Run the following commands in the project directory:
+```text
+mvn clean package
+mvn spring-boot:run
+mvn test
+```
+
 ---
 
 ## API Documentation (Swagger)
